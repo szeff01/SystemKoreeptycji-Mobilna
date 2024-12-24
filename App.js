@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,10 +9,13 @@ import {
   ScrollView,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import config from "./utils/config";
+
+const API_BASE_URL = config.apiBaseUrl;
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false); // Stan dla admina
+  const [isAdmin, setIsAdmin] = useState(true); // Stan dla admina
   const [isRegister, setIsRegister] = useState(true);
 
   return (
@@ -88,7 +91,6 @@ function UserPanel({ onLogout }) {
   );
 }
 
-
 function SearchBar({ onSearch }) {
   const [searchText, setSearchText] = useState("");
 
@@ -122,8 +124,12 @@ function TutorList({ tutors }) {
             <View key={index} style={styles.tutorCard}>
               <Text style={styles.tutorName}>{tutor.name}</Text>
               <Text style={styles.tutorDetails}>Cena: {tutor.price} zł/h</Text>
-              <Text style={styles.tutorDetails}>Lokalizacja: {tutor.location}</Text>
-              <Text style={styles.tutorDetails}>Kategorie: {tutor.category}</Text>
+              <Text style={styles.tutorDetails}>
+                Lokalizacja: {tutor.location}
+              </Text>
+              <Text style={styles.tutorDetails}>
+                Kategorie: {tutor.category}
+              </Text>
             </View>
           ))}
         </ScrollView>
@@ -133,8 +139,6 @@ function TutorList({ tutors }) {
     </View>
   );
 }
-
-
 
 function AdminPanel({ onLogout }) {
   const [isAddingTutor, setIsAddingTutor] = useState(false);
@@ -172,8 +176,9 @@ function AdminPanel({ onLogout }) {
 
   const fetchTutors = async () => {
     try {
-      const response = await fetch("http://10.0.2.2:5001/tutors/");
-      if (!response.ok) throw new Error("Błąd podczas pobierania korepetytorów.");
+      const response = await fetch(`${API_BASE_URL}/tutors/`);
+      if (!response.ok)
+        throw new Error("Błąd podczas pobierania korepetytorów.");
       const data = await response.json();
       setTutors(data); // Update the tutors list
     } catch (error) {
@@ -195,7 +200,7 @@ function AdminPanel({ onLogout }) {
     }
 
     try {
-      const response = await fetch("http://10.0.2.2:5001/tutors/add", {
+      const response = await fetch(`${API_BASE_URL}/tutors/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(tutorData),
@@ -230,7 +235,10 @@ function AdminPanel({ onLogout }) {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Panel Administrator</Text>
         <View style={styles.headerButtons}>
-          <Button title="Dodaj korepetytora" onPress={() => setIsAddingTutor(true)} />
+          <Button
+            title="Dodaj korepetytora"
+            onPress={() => setIsAddingTutor(true)}
+          />
           <Button title="Wyloguj" onPress={onLogout} />
         </View>
       </View>
@@ -285,7 +293,9 @@ function AdminPanel({ onLogout }) {
           <Picker
             selectedValue={tutorData.location}
             style={styles.picker}
-            onValueChange={(itemValue) => handleInputChange("location", itemValue)}
+            onValueChange={(itemValue) =>
+              handleInputChange("location", itemValue)
+            }
           >
             <Picker.Item label="Online" value="Online" />
             <Picker.Item label="Stacjonarnie" value="Offline" />
@@ -294,7 +304,9 @@ function AdminPanel({ onLogout }) {
           <Picker
             selectedValue={tutorData.category}
             style={styles.picker}
-            onValueChange={(itemValue) => handleInputChange("category", itemValue)}
+            onValueChange={(itemValue) =>
+              handleInputChange("category", itemValue)
+            }
           >
             <Picker.Item label="Matematyka" value="Matematyka" />
             <Picker.Item label="Język Angielski" value="Angielski" />
@@ -312,7 +324,9 @@ function AdminPanel({ onLogout }) {
             <ScrollView horizontal style={styles.tutorsScroll}>
               {filteredTutors.map((tutor, index) => (
                 <View key={index} style={styles.tutorCard}>
-                  <Text style={styles.tutorName}>{`${tutor.firstName} ${tutor.lastName}`}</Text>
+                  <Text
+                    style={styles.tutorName}
+                  >{`${tutor.firstName} ${tutor.lastName}`}</Text>
                   <Text style={styles.tutorDetails}>
                     Cena: {tutor.price} zł/h
                   </Text>
@@ -334,10 +348,6 @@ function AdminPanel({ onLogout }) {
   );
 }
 
-
-
-
-
 function RegisterForm({ onSwitch }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -350,7 +360,7 @@ function RegisterForm({ onSwitch }) {
     }
 
     try {
-      const response = await fetch("http://10.0.2.2:5001/auth/register", {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, email, password }),
@@ -416,7 +426,7 @@ function LoginForm({ onSwitch, onLogin }) {
     }
 
     try {
-      const response = await fetch("http://10.0.2.2:5001/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

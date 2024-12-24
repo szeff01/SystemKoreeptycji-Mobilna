@@ -10,7 +10,7 @@ const tutorRoutes = require("./routes/tutorRoutes");
 const app = express();
 
 // Middleware
-app.use(bodyParser.json()); // Obsługa JSON w żądaniach
+app.use(express.json()); // Obsługa JSON w żądaniach
 app.use(cors()); // Obsługa CORS (dla żądań z innych domen)
 
 // Rejestracja tras
